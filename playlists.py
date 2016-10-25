@@ -1,0 +1,164 @@
+#!/usr/bin/python
+# -*- coding:utf-8; tab-width:4; mode:python -*-
+
+import base64
+import json
+from flask import Flask, jsonify, abort, make_response, request, url_for
+app = Flask(__name__)
+app.config['DEBUG'] = True
+
+'''
+songs = [{"id":md5, base64 --> title and album,
+          "title":"",
+          "artist":"",
+          "album": "",
+          "year":""}]
+
+playlist = [{"name":"",
+             "description":"",
+             "songs":[]}]
+'''
+
+songs = []
+playlists = []
+
+
+
+@app.errorhandler(404)
+def not_found(error):
+    return make_response(jsonify({'error': 'Not Found'}), 404)
+
+
+# OPERACIONES sobre songs
+
+@app.route('/songs/<path:id_song>', methods = ['DELETE'])
+def del_song(id_song):
+    aux = filter(lambda t:t['id'] == id_song, songs)
+    if len(aux) == 0:
+        abort(404)
+    songs.remove(aux[0])
+    return make_response(jsonify({"deleted":id_song}), 200)
+
+
+def getSongs():
+    return make_response(jsonify({"songs":songs}), 200)
+
+                    
+def addSong():
+    attr = ['title', 'album', 'artist']
+    if not request.json or [it for it in attr if not it in request.json]:
+        abort(400)
+    title = request.json['title']
+    album = request.json['album']
+    artist = request.json['artist']
+    idSong = base64.b64encode(title + album + artist)
+    if len(filter(lambda t:t['id']==idSong,songs)) != 0:
+        abort(409)
+    newSong = {
+        'id':idSong,
+        'title':title,
+        'album':album,
+        'artist':artist,
+        'year':request.json.get('year',"")}
+    songs.append(newSong)
+    return make_response (jsonify({"created":idSong}), 201)
+
+
+@app.route('/songs', methods = ['GET', 'POST'])
+def manager_songs():
+    if request.method == 'POST':
+        return addSong()
+    elif request.method == 'GET':
+        return getSongs()
+
+
+
+# OPERACIONES sobre playlists
+
+@app.route('/playlists', methods = ['GET'])
+def get_playlists():
+    return make_response(jsonify({"playlists":playlists}), 200)
+
+
+def delPlayList(id_ps):    
+    aux = filter(lambda t:t['name'] == id_ps, playlists)
+    if len(aux) == 0:
+        abort(404)
+    playlists.remove(aux[0])
+    return make_response(jsonify({'deleted':aux[0]['name']}), 200)
+
+
+def getPlayList(id_ps):    
+    aux = filter(lambda t:t['name'] == str(id_ps), playlists)
+    if len(aux) == 0:
+        abort(404)
+    return make_response(jsonify(aux[0]), 200)
+
+
+def addPlayList(id_ps):
+    aux = filter(lambda t:t['name'] == id_ps, playlists)
+
+    description = ""
+    if request.json and 'description' in request.json:
+        description = request.json['description']
+
+    if len(aux) != 0:
+        aux[0]['description'] = description
+        return make_response(jsonify({"updated":id_ps}), 200)
+        
+    new_ps = {
+        'name' : id_ps,
+        'description':description,
+        'songs':[]}
+    playlists.append(new_ps)
+    return make_response(jsonify({"id":id_ps}), 201)
+
+
+@app.route('/playlists/<path:id_ps>', methods = ['DELETE', 'PUT', 'GET'])
+def manager_playlist(id_ps):
+    if request.method == 'GET':
+        return getPlayList(id_ps)
+    elif request.method == 'PUT':
+        return addPlayList(id_ps)
+    elif request.method == 'DELETE':
+        return delPlayList(id_ps)
+
+
+@app.route('/playlists/<id_ps>/songs', methods = ['POST'])
+def addSongToAPlayList(id_ps):
+    if not request.json or not 'song' in request.json:
+        abort(400)
+    reqSong = request.json['song']
+    lstPS = filter(lambda t:t['name'] == id_ps, playlists)
+    if len(lstPS) == 0:
+        abort(404)
+    lstSong = filter(lambda t:t['id'] == reqSong, songs)
+    if len(lstSong) == 0:
+        abort(400)
+    lstPS[0]['songs'].append(reqSong)
+        
+    return jsonify({"info":"The song "+ reqSong + " has been included in " + id_ps + " playlist"})
+
+
+@app.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
+def delSongOfAPlayList(id_ps, id_song):
+    auxPS = filter(lambda t:t['name'] == id_ps, playlists)
+    if len(auxPS) == 0:
+        abort(404)
+
+    psSongs = auxPS[0]['songs']
+
+    auxS = filter(lambda t:t == id_song, psSongs)
+    if len(auxS) == 0:
+        return jsonify({"info":"The song was not found"})
+        
+    auxPS[0]['songs'].remove(auxS[0])
+        
+    return jsonify({"info":"The song "+ id_song + " has been deleted from " + id_ps + " playlist"})
+    
+
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
