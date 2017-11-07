@@ -150,7 +150,7 @@ def delSongOfAPlaylist(id_ps, id_song):
 
     auxS = filter(lambda t:t == id_song, psSongs)
     if len(auxS) == 0:
-        return jsonify({"info":"The song was not found"})
+        abort(404)
         
     auxPS[0]['songs'].remove(auxS[0])
         
