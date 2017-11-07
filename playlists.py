@@ -32,7 +32,7 @@ def not_found(error):
 # OPERACIONES sobre songs
 
 @app.route('/songs/<path:id_song>', methods = ['DELETE'])
-def del_song(id_song):
+def delSong(id_song):
     aux = filter(lambda t:t['id'] == id_song, songs)
     if len(aux) == 0:
         abort(404)
@@ -76,11 +76,11 @@ def manager_songs():
 # OPERACIONES sobre playlists
 
 @app.route('/playlists', methods = ['GET'])
-def get_playlists():
+def getPlaylists():
     return make_response(jsonify({"playlists":playlists}), 200)
 
 
-def delPlayList(id_ps):    
+def delPlaylist(id_ps):    
     aux = filter(lambda t:t['name'] == id_ps, playlists)
     if len(aux) == 0:
         abort(404)
@@ -88,14 +88,14 @@ def delPlayList(id_ps):
     return make_response(jsonify({'deleted':aux[0]['name']}), 200)
 
 
-def getPlayList(id_ps):    
+def getPlaylist(id_ps):    
     aux = filter(lambda t:t['name'] == str(id_ps), playlists)
     if len(aux) == 0:
         abort(404)
     return make_response(jsonify(aux[0]), 200)
 
 
-def addPlayList(id_ps):
+def addPlaylist(id_ps):
     aux = filter(lambda t:t['name'] == id_ps, playlists)
 
     description = ""
@@ -117,15 +117,15 @@ def addPlayList(id_ps):
 @app.route('/playlists/<path:id_ps>', methods = ['DELETE', 'PUT', 'GET'])
 def manager_playlist(id_ps):
     if request.method == 'GET':
-        return getPlayList(id_ps)
+        return getPlaylist(id_ps)
     elif request.method == 'PUT':
-        return addPlayList(id_ps)
+        return addPlaylist(id_ps)
     elif request.method == 'DELETE':
-        return delPlayList(id_ps)
+        return delPlaylist(id_ps)
 
 
 @app.route('/playlists/<id_ps>/songs', methods = ['POST'])
-def addSongToAPlayList(id_ps):
+def addSongToAPlaylist(id_ps):
     if not request.json or not 'song' in request.json:
         abort(400)
     reqSong = request.json['song']
@@ -141,7 +141,7 @@ def addSongToAPlayList(id_ps):
 
 
 @app.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
-def delSongOfAPlayList(id_ps, id_song):
+def delSongOfAPlaylist(id_ps, id_song):
     auxPS = filter(lambda t:t['name'] == id_ps, playlists)
     if len(auxPS) == 0:
         abort(404)
