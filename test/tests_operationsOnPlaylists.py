@@ -32,11 +32,11 @@ class OperationsPlaylistsTestCase(unittest.TestCase):
     def add_ACDC_Song(self):
         return self.tester.post('/songs', content_type='application/json', data=json.dumps({'title':'Highway to Hell','artist':'ACDC', 'album':'Highway to Hell'}))
 
-    @with_setup(setUp, tearDown)
+
     def add_Song_To_A_Playlist(self, playlist, song):
         return self.tester.post('/playlists/'+playlist+'/songs', content_type='application/json', data=json.dumps({'song':song}))
 
-    @with_setup(setUp, tearDown)
+
     def test_add_song_to_playlist(self):
         self.add_Playlist('ps')
         self.add_ACDC_Song()
@@ -45,18 +45,18 @@ class OperationsPlaylistsTestCase(unittest.TestCase):
         assert_that(response.data, contains_string('ps playlist'))
         self.assertEqual(response.status_code, 200)
 
-    @with_setup(setUp, tearDown)
+
     def test_add_song_not_saved_to_playlist(self):
         self.add_Playlist('ps')
         response = self.add_Song_To_A_Playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
         self.assertEqual(response.status_code, 400)
     
-    @with_setup(setUp, tearDown)
+
     def test_add_song_to_playlist_not_saved(self):
         response = self.tester.post('/playlists/psNew/songs', content_type='application/json', data=json.dumps({'song':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='}))
         self.assertEqual(response.status_code, 404)
 
-    @with_setup(setUp, tearDown)    
+
     def test_delete_song_of_playlist(self):
         self.add_Playlist('ps')
         self.add_ACDC_Song()
@@ -66,7 +66,7 @@ class OperationsPlaylistsTestCase(unittest.TestCase):
         assert_that(response.data, contains_string('deleted'))
         self.assertEqual(response.status_code, 200)
 
-    @with_setup(setUp, tearDown)        
+
     def test_delete_song_not_saved_in_playlist(self):
         self.add_Playlist('psNew')
         self.add_ACDC_Song()

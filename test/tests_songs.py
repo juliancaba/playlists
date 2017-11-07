@@ -30,26 +30,26 @@ class SongsTestCase(unittest.TestCase):
     def add_ACDC_Song(self):
         return self.tester.post('/songs', content_type='application/json', data=json.dumps({'title':'Highway to Hell','artist':'ACDC', 'album':'Highway to Hell'}))
         
-    @with_setup(setUp, tearDown)    
+
     def test_get_empty(self):
         response= self.tester.get('/songs', content_type='application/json')
         self.assertEqual(json.loads(response.data), {'songs':[]})
         self.assertEqual(response.status_code, 200)
         
-    @with_setup(setUp, tearDown)
+
     def test_new_song_error(self):
         response= self.tester.post('/songs', content_type='application/json', data=json.dumps({'title':'a1'}))
         self.assertEqual(response.status_code, 400)
 
     
-    @with_setup(setUp, tearDown)
+
     def test_new_song(self):
         response= self.add_ACDC_Song()
         print response.data
         self.assertEqual(json.loads(response.data), {'created':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='})
         self.assertEqual(response.status_code, 201)
 
-    @with_setup(setUp, tearDown)
+
     def test_add_song_conflict(self):
         resp=self.add_ACDC_Song()
         self.assertEqual(resp.status_code, 201)
@@ -57,7 +57,6 @@ class SongsTestCase(unittest.TestCase):
         self.assertEqual(resp.status_code, 409)
         
 
-    @with_setup(setUp, tearDown)
     def test_get_songs(self):
         self.add_ACDC_Song()
         response=self.tester.get('/songs', content_type='application/json')
@@ -65,12 +64,12 @@ class SongsTestCase(unittest.TestCase):
         assert_that(response.data, contains_string('Highway to Hell'))
         self.assertEqual(response.status_code, 200)
 
-    @with_setup(setUp, tearDown)        
+
     def test_delete_not_song_found(self):
         response=self.tester.delete('/songs/taylor', content_type='application/json')        
         self.assertEqual(response.status_code, 404)
 
-    @with_setup(setUp, tearDown)    
+
     def test_delete_song(self):
         responsePost = self.add_ACDC_Song()
         code = json.loads(responsePost.data)['created']
