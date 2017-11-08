@@ -11,9 +11,9 @@ import unittest
 import tempfile
 
 from hamcrest import *
-from nose.tools import with_setup
 
-class OperationsPlaylistsTestCase(unittest.TestCase):
+
+class SongsAndPlaylistsPlaylistsTestCase(unittest.TestCase):
 
     def setUp(self):
         self.tester = app.test_client(self)

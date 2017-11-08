@@ -10,7 +10,7 @@ import unittest
 import tempfile
 
 from hamcrest import *
-from nose.tools import with_setup
+
 
 
 class SongsTestCase(unittest.TestCase):
