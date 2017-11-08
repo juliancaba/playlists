@@ -30,14 +30,28 @@ def not_found(error):
 
 
 # OPERACIONES sobre songs
-
-@app.route('/songs/<path:id_song>', methods = ['DELETE'])
 def delSong(id_song):
     aux = filter(lambda t:t['id'] == id_song, songs)
     if len(aux) == 0:
         abort(404)
     songs.remove(aux[0])
     return make_response(jsonify({"deleted":id_song}), 200)
+
+
+def getSong(id_song):
+    aux = filter(lambda t:t['id'] == id_song, songs)
+    if len(aux) == 0:
+        abort(404)
+    return make_response(jsonify({"song":aux[0]}), 200)
+
+
+@app.route('/songs/<path:id_song>', methods = ['DELETE','GET'])
+def manager_song(id_song):
+    if request.method == 'DELETE':
+        return delSong(id_song)
+    elif request.method == 'GET':
+        return getSong(id_song)
+
 
 
 def getSongs():

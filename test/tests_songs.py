@@ -35,6 +35,18 @@ class SongsTestCase(unittest.TestCase):
         response= self.tester.get('/songs', content_type='application/json')
         self.assertEqual(json.loads(response.data), {'songs':[]})
         self.assertEqual(response.status_code, 200)
+
+        
+    def test_get_song(self):
+        response= self.add_ACDC_Song()
+        response= self.tester.get('/songs/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
+        assert_that(response.data, contains_string('Highway to Hell'))
+        self.assertEqual(response.status_code, 200)
+
+        
+    def test_get_song_not_found(self):
+        response= self.tester.get('/songs/NONE', content_type='application/json')
+        self.assertEqual(response.status_code, 404)
         
 
     def test_new_song_error(self):
@@ -45,7 +57,6 @@ class SongsTestCase(unittest.TestCase):
 
     def test_new_song(self):
         response= self.add_ACDC_Song()
-        print response.data
         self.assertEqual(json.loads(response.data), {'created':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='})
         self.assertEqual(response.status_code, 201)
 
