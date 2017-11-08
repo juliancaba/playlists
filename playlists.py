@@ -149,7 +149,7 @@ def addSongToAPlaylist(id_ps):
     lstSong = filter(lambda t:t['id'] == reqSong, songs)
     if len(lstSong) == 0:
         abort(400)
-    lstPS[0]['songs'].append(reqSong)
+    lstPS[0]['songs'].append(url_for('manager_song', id_song=reqSong, _external=True))
         
     return jsonify({"info":"The song "+ reqSong + " has been included in " + id_ps + " playlist"})
 
@@ -161,8 +161,9 @@ def delSongOfAPlaylist(id_ps, id_song):
         abort(404)
 
     psSongs = auxPS[0]['songs']
-
-    auxS = filter(lambda t:t == id_song, psSongs)
+    hateoasSong = url_for('manager_song', id_song=id_song, _external=True)
+    
+    auxS = filter(lambda t:t == hateoasSong, psSongs)
     if len(auxS) == 0:
         abort(404)
         
