@@ -63,7 +63,7 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
         self.add_Song_To_A_Playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
         response = self.tester.delete('/playlists/ps/songs/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
         assert_that(response.data, contains_string('SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='))
-        assert_that(response.data, contains_string('deleted'))
+        assert_that(response.data, contains_string('Deleted'))
         self.assertEqual(response.status_code, 200)
 
 

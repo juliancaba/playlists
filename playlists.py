@@ -152,7 +152,7 @@ def addSongToAPlaylist(id_ps):
     hateoasSong = url_for('manager_song', id_song=reqSong, _external=True)
     lstPS[0]['songs'].append(hateoasSong)
         
-    return jsonify({"info":"The song "+ reqSong + " has been included in " + id_ps + " playlist"})
+    return jsonify({"info":"Added "+ reqSong + " in " + id_ps + " playlist"})
 
 
 @app.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
@@ -170,7 +170,7 @@ def delSongOfAPlaylist(id_ps, id_song):
         
     auxPS[0]['songs'].remove(auxS[0])
         
-    return jsonify({"info":"The song "+ id_song + " has been deleted from " + id_ps + " playlist"})
+    return jsonify({"info":"Deleted "+ id_song + " from " + id_ps + " playlist"})
     
 
 
