@@ -13,7 +13,7 @@ import tempfile
 from hamcrest import *
 
 
-class SongsAndPlaylistsPlaylistsTestCase(unittest.TestCase):
+class SongsAndPlaylistsTestCase(unittest.TestCase):
 
     def setUp(self):
         self.tester = app.test_client(self)
@@ -49,7 +49,7 @@ class SongsAndPlaylistsPlaylistsTestCase(unittest.TestCase):
     def test_add_song_not_saved_to_playlist(self):
         self.add_Playlist('ps')
         response = self.add_Song_To_A_Playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
-        self.assertEqual(response.status_code, 400)
+        self.assertEqual(response.status_code, 404)
     
 
     def test_add_song_to_playlist_not_saved(self):
