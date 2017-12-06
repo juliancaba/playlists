@@ -150,6 +150,9 @@ def addSongToAPlaylist(id_ps):
     if len(lstSong) == 0:
         abort(404)
     hateoasSong = url_for('manager_song', id_song=reqSong, _external=True)
+    if hateoasSong in lstPS[0]['songs']:
+        abort(409)
+        
     lstPS[0]['songs'].append(hateoasSong)
         
     return jsonify({"info":"Added "+ reqSong + " in " + id_ps + " playlist"})
