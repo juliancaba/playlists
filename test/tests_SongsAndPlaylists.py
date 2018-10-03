@@ -41,7 +41,7 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
         resp = self._add_playlist('ps')
         self._add_ACDC_Song()
         response = self._add_song_to_playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
-        assert_that(response.data, contains_string('ps playlist'))
+        assert_that(response.data.decode("utf-8"), contains_string('ps playlist'))
         self.assertEqual(response.status_code, 200)
 
 
@@ -61,8 +61,8 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
         self._add_ACDC_Song()
         self._add_song_to_playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
         response = self.tester.delete('/playlists/ps/songs/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
-        assert_that(response.data, contains_string('SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='))
-        assert_that(response.data, contains_string('Deleted'))
+        assert_that(response.data.decode("utf-8"), contains_string('SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='))
+        assert_that(response.data.decode("utf-8"), contains_string('Deleted'))
         self.assertEqual(response.status_code, 200)
 
 

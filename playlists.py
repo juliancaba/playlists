@@ -31,7 +31,7 @@ def not_found(error):
 
 # OPERACIONES sobre songs
 def delSong(id_song):
-    aux = filter(lambda t:t['id'] == id_song, songs)
+    aux = list(filter(lambda t:t['id'] == id_song, songs))
     if len(aux) == 0:
         abort(404)
     songs.remove(aux[0])
@@ -39,7 +39,7 @@ def delSong(id_song):
 
 
 def getSong(id_song):
-    aux = filter(lambda t:t['id'] == id_song, songs)
+    aux = list(filter(lambda t:t['id'] == id_song, songs))
     if len(aux) == 0:
         abort(404)
     return make_response(jsonify({"song":aux[0]}), 200)
@@ -65,8 +65,9 @@ def addSong():
     title = request.json['title']
     album = request.json['album']
     artist = request.json['artist']
-    idSong = base64.b64encode(title + album + artist)
-    if len(filter(lambda t:t['id']==idSong,songs)) != 0:
+    idSong = (base64.b64encode((title + album + artist).encode())).decode('utf-8')
+    print (idSong)
+    if len(list(filter(lambda t:t['id']==idSong,songs))) != 0:
         abort(409)
     newSong = {
         'id':idSong,
@@ -75,7 +76,7 @@ def addSong():
         'artist':artist,
         'year':request.json.get('year',"")}
     songs.append(newSong)
-    return make_response (jsonify({"created":idSong}), 201)
+    return make_response (jsonify({"created":str(idSong)}), 201)
 
 
 @app.route('/songs', methods = ['GET', 'POST'])
@@ -95,7 +96,7 @@ def getPlaylists():
 
 
 def delPlaylist(id_ps):    
-    aux = filter(lambda t:t['name'] == id_ps, playlists)
+    aux = list(filter(lambda t:t['name'] == id_ps, playlists))
     if len(aux) == 0:
         abort(404)
     playlists.remove(aux[0])
@@ -103,14 +104,14 @@ def delPlaylist(id_ps):
 
 
 def getPlaylist(id_ps):    
-    aux = filter(lambda t:t['name'] == str(id_ps), playlists)
+    aux = list(filter(lambda t:t['name'] == str(id_ps), playlists))
     if len(aux) == 0:
         abort(404)
     return make_response(jsonify(aux[0]), 200)
 
 
 def addPlaylist(id_ps):
-    aux = filter(lambda t:t['name'] == id_ps, playlists)
+    aux = list(filter(lambda t:t['name'] == id_ps, playlists))
 
     description = ""
     if request.json and 'description' in request.json:
@@ -118,14 +119,14 @@ def addPlaylist(id_ps):
 
     if len(aux) != 0:
         aux[0]['description'] = description
-        return make_response(jsonify({"updated":id_ps}), 200)
+        return make_response(jsonify({"updated":str(id_ps)}), 200)
         
     new_ps = {
         'name' : id_ps,
         'description':description,
         'songs':[]}
     playlists.append(new_ps)
-    return make_response(jsonify({"id":id_ps}), 201)
+    return make_response(jsonify({"id":str(id_ps)}), 201)
 
 
 @app.route('/playlists/<path:id_ps>', methods = ['DELETE', 'PUT', 'GET'])
@@ -143,10 +144,10 @@ def addSongToAPlaylist(id_ps):
     if not request.json or not 'song' in request.json:
         abort(400)
     reqSong = request.json['song']
-    lstPS = filter(lambda t:t['name'] == id_ps, playlists)
+    lstPS = list(filter(lambda t:t['name'] == id_ps, playlists))
     if len(lstPS) == 0:
         abort(404)
-    lstSong = filter(lambda t:t['id'] == reqSong, songs)
+    lstSong = list(filter(lambda t:t['id'] == reqSong, songs))
     if len(lstSong) == 0:
         abort(404)
     hateoasSong = url_for('manager_song', id_song=reqSong, _external=True)
@@ -160,14 +161,14 @@ def addSongToAPlaylist(id_ps):
 
 @app.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
 def delSongOfAPlaylist(id_ps, id_song):
-    auxPS = filter(lambda t:t['name'] == id_ps, playlists)
+    auxPS = list(filter(lambda t:t['name'] == id_ps, playlists))
     if len(auxPS) == 0:
         abort(404)
 
     psSongs = auxPS[0]['songs']
     hateoasSong = url_for('manager_song', id_song=id_song, _external=True)
     
-    auxS = filter(lambda t:t == hateoasSong, psSongs)
+    auxS = list(filter(lambda t:t == hateoasSong, psSongs))
     if len(auxS) == 0:
         abort(404)
         

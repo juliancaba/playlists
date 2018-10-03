@@ -29,7 +29,7 @@ class PlaylistsTestCase(unittest.TestCase):
 
     def test_empty(self):
         response = self.tester.get('/playlists', content_type='application/json')
-        self.assertEqual(json.loads(response.data), {'playlists':[]})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'playlists':[]})
         self.assertEqual(response.status_code, 200)
 
 
@@ -40,14 +40,14 @@ class PlaylistsTestCase(unittest.TestCase):
 
     def test_new_playlists(self):
         response = self._add_playlist()
-        self.assertEqual(json.loads(response.data), {'id':'psmon'})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'id':'psmon'})
         self.assertEqual(response.status_code, 201)
         
 
     def test_update_playlists(self):
         self._add_playlist()
         response = self.tester.put('/playlists/psmon', content_type='application/json', data=json.dumps({'description':'mi lista preferida de los lunes'}))
-        self.assertEqual(json.loads(response.data), {'updated':'psmon'})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'updated':'psmon'})
         self.assertEqual(response.status_code, 200)
 
 
@@ -59,7 +59,7 @@ class PlaylistsTestCase(unittest.TestCase):
     def test_delete(self):
         self._add_playlist()
         response = self.tester.delete('/playlists/psmon', content_type='application/json')
-        self.assertEqual(json.loads(response.data), {'deleted':'psmon'})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'deleted':'psmon'})
         self.assertEqual(response.status_code, 200)
         
         
