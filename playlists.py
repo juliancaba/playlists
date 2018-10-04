@@ -139,6 +139,7 @@ def manager_playlist(id_ps):
         return delPlaylist(id_ps)
 
 
+@app.route('/playlists/<id_ps>', methods = ['POST'])
 @app.route('/playlists/<id_ps>/songs', methods = ['POST'])
 def addSongToAPlaylist(id_ps):
     if not request.json or not 'song' in request.json:
@@ -159,6 +160,7 @@ def addSongToAPlaylist(id_ps):
     return jsonify({"info":"Added "+ reqSong + " in " + id_ps + " playlist"})
 
 
+@app.route('/playlists/<id_ps>/<id_song>', methods = ['DELETE'])
 @app.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
 def delSongOfAPlaylist(id_ps, id_song):
     auxPS = list(filter(lambda t:t['name'] == id_ps, playlists))

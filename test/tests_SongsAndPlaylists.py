@@ -36,6 +36,9 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
     def _add_song_to_playlist(self, playlist, song):
         return self.tester.post('/playlists/'+playlist+'/songs', content_type='application/json', data=json.dumps({'song':song}))
 
+    def _add_song_to_playlist2(self, playlist, song):
+        return self.tester.post('/playlists/'+playlist, content_type='application/json', data=json.dumps({'song':song}))
+
 
     def test_add_song_to_playlist(self):
         resp = self._add_playlist('ps')
@@ -43,7 +46,7 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
         response = self._add_song_to_playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
         assert_that(response.data.decode("utf-8"), contains_string('ps playlist'))
         self.assertEqual(response.status_code, 200)
-
+        
 
     def test_add_null_song_in_playlist(self):
         self._add_playlist('ps')
@@ -61,6 +64,15 @@ class SongsAndPlaylistsTestCase(unittest.TestCase):
         self._add_ACDC_Song()
         self._add_song_to_playlist('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
         response = self.tester.delete('/playlists/ps/songs/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
+        assert_that(response.data.decode("utf-8"), contains_string('SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='))
+        assert_that(response.data.decode("utf-8"), contains_string('Deleted'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_delete_song_of_playlist_v2(self):
+        self._add_playlist('ps')
+        self._add_ACDC_Song()
+        self._add_song_to_playlist2('ps', 'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==')
+        response = self.tester.delete('/playlists/ps/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
         assert_that(response.data.decode("utf-8"), contains_string('SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='))
         assert_that(response.data.decode("utf-8"), contains_string('Deleted'))
         self.assertEqual(response.status_code, 200)
