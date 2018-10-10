@@ -11,9 +11,8 @@ bp_songs=Blueprint("bp_songs", __name__)
 
 
 # OPERACIONES sobre songs
-
 def delSong(id_song):
-    aux = filter(lambda t:t['id'] == id_song, songs)
+    aux = list(filter(lambda t:t['id'] == id_song, songs))
     if len(aux) == 0:
         abort(404)
     songs.remove(aux[0])
@@ -21,7 +20,7 @@ def delSong(id_song):
 
 
 def getSong(id_song):
-    aux = filter(lambda t:t['id'] == id_song, songs)
+    aux = list(filter(lambda t:t['id'] == id_song, songs))
     if len(aux) == 0:
         abort(404)
     return make_response(jsonify({"song":aux[0]}), 200)
@@ -35,6 +34,7 @@ def manager_song(id_song):
         return getSong(id_song)
 
 
+
 def getSongs():
     return make_response(jsonify({"songs":songs}), 200)
 
@@ -46,8 +46,9 @@ def addSong():
     title = request.json['title']
     album = request.json['album']
     artist = request.json['artist']
-    idSong = base64.b64encode(title + album + artist)
-    if len(filter(lambda t:t['id']==idSong,songs)) != 0:
+    idSong = (base64.b64encode((title + album + artist).encode())).decode('utf-8')
+    print (idSong)
+    if len(list(filter(lambda t:t['id']==idSong,songs))) != 0:
         abort(409)
     newSong = {
         'id':idSong,
@@ -56,7 +57,7 @@ def addSong():
         'artist':artist,
         'year':request.json.get('year',"")}
     songs.append(newSong)
-    return make_response (jsonify({"created":idSong}), 201)
+    return make_response (jsonify({"created":str(idSong)}), 201)
 
 
 @bp_songs.route('', methods = ['GET', 'POST'])
@@ -65,3 +66,4 @@ def manager_songs():
         return addSong()
     elif request.method == 'GET':
         return getSongs()
+
