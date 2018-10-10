@@ -2,8 +2,8 @@
 # -*- coding:utf-8; tab-width:4; mode:python -*-
 
 from flask import Flask, make_response, jsonify
-from songs_routes import bp_songs
-from playlists_routes import bp_playlist
+from myapp.songs_routes import bp_songs
+from myapp.playlists_routes import bp_playlist
 
 
 # Por defecto el root es $PREFIX/var/myapp-instance

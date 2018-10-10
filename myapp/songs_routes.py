@@ -5,7 +5,7 @@
 import base64
 import json
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
-from models import songs
+from myapp.models import songs
 
 bp_songs=Blueprint("bp_songs", __name__)
 

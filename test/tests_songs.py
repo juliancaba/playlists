@@ -32,14 +32,14 @@ class SongsTestCase(unittest.TestCase):
 
     def test_get_empty(self):
         response= self.tester.get('/songs', content_type='application/json')
-        self.assertEqual(json.loads(response.data), {'songs':[]})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'songs':[]})
         self.assertEqual(response.status_code, 200)
 
         
     def test_get_song(self):
         response= self._add_ACDC_Song()
         response= self.tester.get('/songs/SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==', content_type='application/json')
-        assert_that(response.data, contains_string('Highway to Hell'))
+        assert_that(response.data.decode("utf-8"), contains_string('Highway to Hell'))
         self.assertEqual(response.status_code, 200)
 
         
@@ -56,7 +56,7 @@ class SongsTestCase(unittest.TestCase):
 
     def test_new_song(self):
         response= self._add_ACDC_Song()
-        self.assertEqual(json.loads(response.data), {'created':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'created':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw=='})
         self.assertEqual(response.status_code, 201)
 
 
@@ -70,8 +70,8 @@ class SongsTestCase(unittest.TestCase):
     def test_get_songs(self):
         self._add_ACDC_Song()
         response=self.tester.get('/songs', content_type='application/json')
-        self.assertEqual(json.loads(response.data),{'songs':[{'album': 'Highway to Hell','artist': 'ACDC','id':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==','title':'Highway to Hell','year':''}]})
-        assert_that(response.data, contains_string('Highway to Hell'))
+        self.assertEqual(json.loads(response.data.decode("utf-8")),{'songs':[{'album': 'Highway to Hell','artist': 'ACDC','id':'SGlnaHdheSB0byBIZWxsSGlnaHdheSB0byBIZWxsQUNEQw==','title':'Highway to Hell','year':''}]})
+        assert_that(response.data.decode("utf-8"), contains_string('Highway to Hell'))
         self.assertEqual(response.status_code, 200)
 
 
@@ -82,9 +82,9 @@ class SongsTestCase(unittest.TestCase):
 
     def test_delete_song(self):
         responsePost = self._add_ACDC_Song()
-        code = json.loads(responsePost.data)['created']
+        code = json.loads(responsePost.data.decode("utf-8"))['created']
         response=self.tester.delete('/songs/'+code, content_type='application/json')        
-        self.assertEqual(json.loads(response.data), {'deleted':str(code)})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'deleted':str(code)})
         self.assertEqual(response.status_code, 200)
     
         

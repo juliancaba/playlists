@@ -5,8 +5,8 @@
 import random
 import json
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
-from models import playlists, songs
-from songs_routes import bp_songs
+from myapp.models import playlists, songs
+from myapp.songs_routes import bp_songs
 
 bp_playlist=Blueprint("bp_playlist", __name__)
 
