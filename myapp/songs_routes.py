@@ -5,25 +5,29 @@
 import base64
 import json
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
-from myapp.models import songs
+from myapp.models import Song, db
 
 bp_songs=Blueprint("bp_songs", __name__)
 
 
 # OPERACIONES sobre songs
 def delSong(id_song):
-    aux = list(filter(lambda t:t['id'] == id_song, songs))
-    if len(aux) == 0:
+    aux = Song.query.filter_by(idSong=id_song)
+    try:
+        db.session.delete(aux.first())
+        db.session.commit()
+    except:
         abort(404)
-    songs.remove(aux[0])
     return make_response(jsonify({"deleted":id_song}), 200)
 
 
 def getSong(id_song):
-    aux = list(filter(lambda t:t['id'] == id_song, songs))
-    if len(aux) == 0:
+    try:        
+        aux = Song.query.filter_by(idSong=str(id_song))
+        response = make_response(jsonify(aux.first().toJSON), 200)
+    except:
         abort(404)
-    return make_response(jsonify({"song":aux[0]}), 200)
+    return response
 
 
 @bp_songs.route('/<path:id_song>', methods = ['DELETE','GET'])
@@ -33,10 +37,12 @@ def manager_song(id_song):
     elif request.method == 'GET':
         return getSong(id_song)
 
-
-
+    
 def getSongs():
-    return make_response(jsonify({"songs":songs}), 200)
+    listSongs = []
+    for it in Song.query.all():
+        listSongs.append(it.toJSON)
+    return make_response(jsonify({"songs":listSongs}), 200)
 
                     
 def addSong():
@@ -47,17 +53,18 @@ def addSong():
     album = request.json['album']
     artist = request.json['artist']
     idSong = (base64.b64encode((title + album + artist).encode())).decode('utf-8')
-    print (idSong)
-    if len(list(filter(lambda t:t['id']==idSong,songs))) != 0:
+    newSong = Song(
+        idSong=str(idSong),
+        title=title,
+        album=album,
+        artist=artist,
+        year=int(request.json.get('year',0)))
+    try:
+        db.session.add(newSong)
+        db.session.commit()
+    except:
         abort(409)
-    newSong = {
-        'id':idSong,
-        'title':title,
-        'album':album,
-        'artist':artist,
-        'year':request.json.get('year',"")}
-    songs.append(newSong)
-    return make_response (jsonify({"created":str(idSong)}), 201)
+    return make_response (jsonify({"created":idSong}), 201)
 
 
 @bp_songs.route('', methods = ['GET', 'POST'])
@@ -66,4 +73,3 @@ def manager_songs():
         return addSong()
     elif request.method == 'GET':
         return getSongs()
-

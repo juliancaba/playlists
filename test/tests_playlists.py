@@ -1,8 +1,8 @@
 #!/usr/bin/python
 # -*- coding:utf-8; tab-width:4; mode:python -*-
 
-from myapp import app
-from myapp.models import songs, playlists
+from myapp import app, db
+from myapp.models import Playlist, Song
 
 
 import os
@@ -20,8 +20,9 @@ class PlaylistsTestCase(unittest.TestCase):
         app.config['TESTING'] = True
 
     def tearDown(self):
-        del songs[:]
-        del playlists[:]
+        Playlist.query.delete()
+        Song.query.delete()
+        db.session.commit()
         del self.tester
 
 
