@@ -16,6 +16,7 @@ class Song(db.Model):
     title = db.Column(db.String(40), nullable=False)
     artist = db.Column(db.String(40), nullable=False)
     album = db.Column(db.String(40), nullable=False)
+    genre = db.Column(db.String(40), nullable=True)
     year = db.Column(db.Integer)
     
     @property
@@ -44,3 +45,10 @@ class Playlist(db.Model):
             aux_lst.append(url_for('bp_song.manager_song', id_song=it, _external=True))
         aux['songs']=aux_lst
         return aux
+
+
+class Webhook(db.Model):
+    __tablename__ = 'webhooks'
+    idEndpoint = db.Column(db.String(128), primary_key=True)
+    genres = db.Column(db.String(128)) #FIXME
+

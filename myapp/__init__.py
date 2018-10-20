@@ -15,9 +15,11 @@ db = SQLAlchemy(app)
 
 from myapp.songs_routes import bp_songs
 from myapp.playlists_routes import bp_playlist
+from myapp.webhook_routes import bp_webhook
 
 app.register_blueprint(bp_songs, url_prefix="/songs")
 app.register_blueprint(bp_playlist)
+app.register_blueprint(bp_webhook)
 
 
 db.init_app(app)
