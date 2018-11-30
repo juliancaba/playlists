@@ -18,7 +18,7 @@ bp_playlist = Blueprint("bp_playlist",__name__)
 def getPlaylists():
     listPlaylists = []
     for it in Playlist.query():
-        listPlaylists.append(it.toJSON)
+        listPlaylists.append(it.to_dict())
     return make_response(jsonify({"playlists":listPlaylists}), 200)
 
 
@@ -44,9 +44,8 @@ def addPlaylist(idPlaylist):
     if request.json and 'description' in request.json:
         description = request.json['description']
 
-    
     try:
-        # If Playlist exits, it will be updated completly
+        # If Playlist exits, it will be updated completly (REST principle)
         keyPlaylist = ndb.Key('Playlist',idPlaylist)
         auxPlaylist = keyPlaylist.get()
         auxPlaylist.songs=[]
@@ -63,21 +62,8 @@ def addPlaylist(idPlaylist):
             response = make_response(jsonify({"created":keyPlaylist_i}), 201)
         except:
             abort(409)
-    '''auxPlaylist = getPlaylistKey(id_ps).get()
-    try:
-        auxPlaylist.description = description
-        auxPlaylist.put()
-    except:        
-        new_ps = Playlist(
-            id = id_ps,
-            description=description,
-            songs=[])
-        try:
-            idPlaylist = new_ps.put()
-            response= make_response(jsonify({"id":idPlaylist}), 201)
-        except:
-            abort(409)'''
     return response
+
 
 
 @bp_playlist.route('/playlists/<path:idPlaylist>', methods = ['DELETE', 'PUT', 'GET'])

@@ -44,7 +44,12 @@ print(str(responseUpd1.json()['updated']))
 print("Get playlist")
 responseGet2=requests.get(BACKEND_PLAYLIST+'/ps')
 print(responseGet2.json())
-   
+
+
+print("Get playlists")
+responseGet3=requests.get(BACKEND_PLAYLIST)
+print(responseGet3.json())
+
 
 print("Add song to playlist")
 responseUpd2=requests.post(BACKEND_PLAYLIST+'/ps/songs', json={'song':str(responseAdd3.json()['created'])})
