@@ -11,27 +11,27 @@ bp_songs=Blueprint("bp_songs", __name__)
 
 
 # OPERACIONES sobre songs
-def delSong(id_song):
-    aux = list(filter(lambda t:t['id'] == id_song, songs))
-    if len(aux) == 0:
+def delSong(idSong):
+    auxSong = list(filter(lambda t:t['id'] == idSong, songs))
+    if len(auxSong) == 0:
         abort(404)
-    songs.remove(aux[0])
-    return make_response(jsonify({"deleted":id_song}), 200)
+    songs.remove(auxSong[0])
+    return make_response(jsonify({"deleted":idSong}), 200)
 
 
-def getSong(id_song):
-    aux = list(filter(lambda t:t['id'] == id_song, songs))
-    if len(aux) == 0:
+def getSong(idSong):
+    auxSong = list(filter(lambda t:t['id'] == idSong, songs))
+    if len(auxSong) == 0:
         abort(404)
-    return make_response(jsonify({"song":aux[0]}), 200)
+    return make_response(jsonify(auxSong[0]), 200)
 
 
-@bp_songs.route('/<path:id_song>', methods = ['DELETE','GET'])
-def manager_song(id_song):
+@bp_songs.route('/<path:idSong>', methods = ['DELETE','GET'])
+def manager_song(idSong):
     if request.method == 'DELETE':
-        return delSong(id_song)
+        return delSong(idSong)
     elif request.method == 'GET':
-        return getSong(id_song)
+        return getSong(idSong)
 
 
 
