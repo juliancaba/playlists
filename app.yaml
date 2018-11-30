@@ -1,0 +1,17 @@
+application: playlist-app
+version: 1
+runtime: python27
+threadsafe: yes
+
+handlers:
+- url: .*
+  script: run.app
+
+
+libraries:
+- name: jinja2
+  version: "2.6"
+
+- name: ssl
+  version: latest
+

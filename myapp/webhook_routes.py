@@ -4,7 +4,8 @@
 
 import json
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
-from myapp.models import Webhook, db
+from google.appengine.ext import ndb
+from myapp.models import Webhook
 
 bp_webhook=Blueprint("bp_webhook", __name__)
 
@@ -16,20 +17,20 @@ def addWebhook():
         abort(400)
     endpoint = request.json['endpoint']
     genre = request.json['genre']
-
+    
     try:
-        auxWH = (Webhook.query.filter_by(idEndpoint=endpoint)).first()
+        keyWH = ndb.Key('Webhook', endpoint)
+        auxWH = keyWH.get()
         if not (genre in auxWH.genres):
-            auxWH.genres = auxWH.genres+' '+genre
-        db.session.commit()
+            auxWH.genres.append(genre)
+        auxWH.put()
         response=make_response(jsonify({"updated":endpoint}), 200)
     except:
-        new_wh = Webhook(
-            idEndpoint = endpoint,
-            genres=genre)
+        newWebhook = Webhook(
+            id = endpoint,
+            genres=[genre])
         try:
-            db.session.add(new_wh)
-            db.session.commit()
+            newWebhook.put()
             response= make_response(jsonify({"created":endpoint}), 201)
         except:
             abort(409)

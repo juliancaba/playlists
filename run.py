@@ -2,4 +2,4 @@
 # -*- coding: utf-8; mode: python -*-
 
 from myapp import app
-app.run()
+#app.run()
