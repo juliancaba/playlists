@@ -18,17 +18,17 @@ def addWebhook():
     genre = request.json['genre']
 
     try:
-        auxWH = (Webhook.query.filter_by(idEndpoint=endpoint)).first()
-        if not (genre in auxWH.genres):
-            auxWH.genres = auxWH.genres+' '+genre
+        auxWebhook = (Webhook.query.filter_by(idEndpoint=endpoint)).first()
+        if not (genre in auxWebhook.genres):
+            auxWebhook.genres = auxWebhook.genres+' '+genre
         db.session.commit()
         response=make_response(jsonify({"updated":endpoint}), 200)
     except:
-        new_wh = Webhook(
+        newWebhook = Webhook(
             idEndpoint = endpoint,
             genres=genre)
         try:
-            db.session.add(new_wh)
+            db.session.add(newWebhook)
             db.session.commit()
             response= make_response(jsonify({"created":endpoint}), 201)
         except:

@@ -56,7 +56,7 @@ class PlaylistsTestCase(unittest.TestCase):
 
     def test_new_playlists(self):
         response = self._add_playlist('ps')
-        self.assertEqual(json.loads(response.data.decode("utf-8")), {'id':'ps'})
+        self.assertEqual(json.loads(response.data.decode("utf-8")), {'created':'ps'})
         self.assertEqual(response.status_code, 201)
         
 
