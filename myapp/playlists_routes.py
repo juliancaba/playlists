@@ -16,94 +16,95 @@ bp_playlist=Blueprint("bp_playlist", __name__)
 @bp_playlist.route('/playlists', methods = ['GET'])
 def getPlaylists():
     listPlaylists = []
-    for it in Playlist.query.all():
-        listPlaylists.append(it.toJSON)
+    for itPlaylist in Playlist.query.all():
+        listPlaylists.append(itPlaylist.toJSON)
     return make_response(jsonify({"playlists":listPlaylists}), 200)
 
 
-def delPlaylist(id_ps):   
-    auxPS = Playlist.query.filter_by(name=id_ps)
+def delPlaylist(idPlaylist):   
+    auxPlaylist = Playlist.query.filter_by(name=idPlaylist)
     try:
-        db.session.delete(auxPS[0])
+        db.session.delete(auxPlaylist[0])
         db.session.commit()
     except:
         abort(404)
-    return make_response(jsonify({"deleted":id_ps}), 200) 
+    return make_response(jsonify({"deleted":idPlaylist}), 200) 
 
 
-def getPlaylist(id_ps):
+def getPlaylist(idPlaylist):
     try:
-        auxPS = Playlist.query.filter_by(name=id_ps)[0]
+        auxPlaylist = Playlist.query.filter_by(name=idPlaylist)[0]
     except:
         abort(404)
-    return make_response(jsonify(auxPS.toJSON), 200) 
+    return make_response(jsonify(auxPlaylist.toJSON), 200) 
 
 
-def addPlaylist(id_ps):
+def addPlaylist(idPlaylist):
     response = None
-    auxPS = Playlist.query.filter_by(name=id_ps)
+    auxPlaylist = Playlist.query.filter_by(name=idPlaylist)
     
     description = ""
     if request.json and 'description' in request.json:
         description = request.json['description']
 
     try:
-        auxPS.first().description = description
-        response=make_response(jsonify({"updated":id_ps}), 200)
+        auxPlaylist.first().description = description
+        auxPlaylist.first().songs_lst = []
+        response=make_response(jsonify({"updated":idPlaylist}), 200)
     except:        
-        new_ps = Playlist(
-            name = str(id_ps),
+        newPlaylist = Playlist(
+            name = str(idPlaylist),
             description=description,
             songs_lst=[])
         try:
-            db.session.add(new_ps)
+            db.session.add(newPlaylist)
             db.session.commit()
-            response= make_response(jsonify({"id":id_ps}), 201)
+            response= make_response(jsonify({"created":idPlaylist}), 201)
         except:
             abort(409)
     return response
 
 
-@bp_playlist.route('/playlists/<path:id_ps>', methods = ['DELETE', 'PUT', 'GET'])
-def manager_playlist(id_ps):
+@bp_playlist.route('/playlists/<path:idPlaylist>', methods = ['DELETE', 'PUT', 'GET'])
+def manager_playlist(idPlaylist):
     if request.method == 'GET':
-        return getPlaylist(id_ps)
+        return getPlaylist(idPlaylist)
     elif request.method == 'PUT':
-        return addPlaylist(id_ps)
+        return addPlaylist(idPlaylist)
     elif request.method == 'DELETE':
-        return delPlaylist(id_ps)
+        return delPlaylist(idPlaylist)
 
 
-@bp_playlist.route('/playlists/<id_ps>', methods = ['POST'])
-@bp_playlist.route('/playlists/<id_ps>/songs', methods = ['POST'])
-def addSongToAPlaylist(id_ps):
+@bp_playlist.route('/playlists/<idPlaylist>', methods = ['POST'])
+@bp_playlist.route('/playlists/<idPlaylist>/songs', methods = ['POST'])
+def addSongToAPlaylist(idPlaylist):
     if not request.json or not 'song' in request.json:
         abort(400)
-    reqSong = request.json['song']
+    idSong = request.json['song']
 
     try:
-        auxSong = Song.query.filter_by(idSong=reqSong).first()
-        auxPS = Playlist.query.filter_by(name=id_ps).first()
-        if auxSong in auxPS.songs_lst:
+        auxSong = Song.query.filter_by(idSong=idSong).first()
+        auxPlaylist = Playlist.query.filter_by(name=idPlaylist).first()
+        if auxSong in auxPlaylist.songs_lst:
             abort(409)
-        auxPS.songs_lst.append(auxSong)
+        auxPlaylist.songs_lst.append(auxSong)
         db.session.commit()
     except:
         abort(404)
                 
-    return make_response(jsonify({"info":"Added "+ reqSong + " in " + id_ps + " playlist"}),200)
+    return make_response(("Added "+ idSong + " in " + idPlaylist + " playlist"), 200)
 
 
-@bp_playlist.route('/playlists/<id_ps>/<id_song>', methods = ['DELETE'])
-@bp_playlist.route('/playlists/<id_ps>/songs/<id_song>', methods = ['DELETE'])
-def delSongOfAPlaylist(id_ps, id_song):
+@bp_playlist.route('/playlists/<idPlaylist>/<idSong>', methods = ['DELETE'])
+@bp_playlist.route('/playlists/<idPlaylist>/songs/<idSong>', methods = ['DELETE'])
+def delSongOfAPlaylist(idPlaylist, idSong):
     try:
-        auxPS = Playlist.query.filter_by(name=id_ps).first()
-        auxSong = Song.query.filter_by(idSong=id_song).first()
-        auxPS.songs_lst.remove(auxSong)
+        auxPlaylist = Playlist.query.filter_by(name=idPlaylist).first()
+        auxSong = Song.query.filter_by(idSong=idSong).first()
+        auxPlaylist.songs_lst.remove(auxSong)
         db.session.commit()
     except:
         abort(404)
-    return make_response(jsonify({"info":"Deleted "+ id_song + " from " + id_ps + " playlist"}),200)
+    return make_response(("Deleted "+ idSong + " from " + idPlaylist + " playlist"), 200)
     
 

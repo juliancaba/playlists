@@ -11,37 +11,37 @@ bp_songs=Blueprint("bp_songs", __name__)
 
 
 # OPERACIONES sobre songs
-def delSong(id_song):
-    aux = Song.query.filter_by(idSong=id_song)
+def delSong(idSong):
+    auxSong = Song.query.filter_by(idSong=idSong)
     try:
-        db.session.delete(aux.first())
+        db.session.delete(auxSong.first())
         db.session.commit()
     except:
         abort(404)
-    return make_response(jsonify({"deleted":id_song}), 200)
+    return make_response(jsonify({"deleted":idSong}), 200)
 
 
-def getSong(id_song):
+def getSong(idSong):
     try:        
-        aux = Song.query.filter_by(idSong=str(id_song))
-        response = make_response(jsonify(aux.first().toJSON), 200)
+        auxSong = Song.query.filter_by(idSong=str(idSong))
+        response = make_response(jsonify(auxSong.first().toJSON), 200)
     except:
         abort(404)
     return response
 
 
-@bp_songs.route('/<path:id_song>', methods = ['DELETE','GET'])
-def manager_song(id_song):
+@bp_songs.route('/<path:idSong>', methods = ['DELETE','GET'])
+def manager_song(idSong):
     if request.method == 'DELETE':
-        return delSong(id_song)
+        return delSong(idSong)
     elif request.method == 'GET':
-        return getSong(id_song)
+        return getSong(idSong)
 
     
 def getSongs():
     listSongs = []
-    for it in Song.query.all():
-        listSongs.append(it.toJSON)
+    for itSong in Song.query.all():
+        listSongs.append(itSong.toJSON)
     return make_response(jsonify({"songs":listSongs}), 200)
 
                     
