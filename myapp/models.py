@@ -41,6 +41,6 @@ class Playlist(db.Model):
         aux = dict([ (c, getattr(self, c)) for c in self.columns ])
         aux_lst = []
         for it in self.songs_lst:
-            aux_lst.append(url_for('bp_song.manager_song', id_song=it, _external=True))
+            aux_lst.append(url_for('bp_songs.manager_song', idSong=it, _external=True))
         aux['songs']=aux_lst
         return aux
