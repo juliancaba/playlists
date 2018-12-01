@@ -38,7 +38,7 @@ class Playlist(db.Model):
         return [ c.name for c in self.__table__.columns ]
     @property
     def toJSON(self):
-        from songs_routes import bp_song
+        from songs_routes import bp_songs
         aux = dict([ (c, getattr(self, c)) for c in self.columns ])
         aux_lst = []
         for it in self.songs_lst:
