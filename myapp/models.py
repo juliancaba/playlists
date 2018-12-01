@@ -28,11 +28,11 @@ class Playlist(ndb.Model):
 
     @property
     def toJSON(self):
-        from songs_routes import bp_song
+        from songs_routes import bp_songs
         aux = self.to_dict()
         aux_lst = []
         for it in self.songs:
-            aux_lst.append(url_for('bp_song.manager_song', urlsafeSong=it, _external=True))
+            aux_lst.append(url_for('bp_songs.manager_song', urlsafeSong=it, _external=True))
         aux['songs']=aux_lst
         return aux
 

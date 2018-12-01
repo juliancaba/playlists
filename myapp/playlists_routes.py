@@ -18,7 +18,7 @@ bp_playlist = Blueprint("bp_playlist",__name__)
 def getPlaylists():
     listPlaylists = []
     for it in Playlist.query():
-        listPlaylists.append(it.to_dict())
+        listPlaylists.append(it.toJSON)
     return make_response(jsonify({"playlists":listPlaylists}), 200)
 
 
@@ -36,7 +36,7 @@ def getPlaylist(idPlaylist):
         keyPlaylist = ndb.Key('Playlist',idPlaylist)
     except:
         abort(404)
-    return make_response(jsonify((keyPlaylist.get()).to_dict()), 200) 
+    return make_response(jsonify((keyPlaylist.get()).toJSON), 200) 
 
 
 def addPlaylist(idPlaylist):
@@ -59,7 +59,7 @@ def addPlaylist(idPlaylist):
             songs=[])
         try:
             keyPlaylist_i = newPlaylist.put()
-            response = make_response(jsonify({"created":keyPlaylist_i}), 201)
+            response = make_response(jsonify({"created":keyPlaylist_i.id()}), 201)
         except:
             abort(409)
     return response

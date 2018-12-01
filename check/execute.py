@@ -60,3 +60,8 @@ print(str(responseUpd3.text))
 
 responseUpd3=requests.delete(BACKEND_PLAYLIST+'/ps/songs/'+str(responseAdd3.json()['created']))
 print(str(responseUpd3.text))
+
+print("Get playlist")
+responseGet2=requests.get(BACKEND_PLAYLIST+'/ps')
+print(responseGet2.json())
+
