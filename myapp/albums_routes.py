@@ -4,6 +4,7 @@
 
 from datetime import date, datetime
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
 from google.appengine.api import urlfetch
 
@@ -41,6 +42,7 @@ def addAlbum():
         year=year)
         
     keyAlbum=newAlbum.put()
+    memcache.flush_all()
     notify(keyAlbum.urlsafe(), genre)
     return make_response (jsonify({"created":keyAlbum.urlsafe()}), 201)
     

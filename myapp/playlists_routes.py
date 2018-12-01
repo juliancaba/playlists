@@ -4,6 +4,7 @@
 
 from datetime import date, datetime
 from google.appengine.ext import ndb
+from google.appengine.api import memcache
 from flask import Blueprint, jsonify, abort, make_response, request
 
 from myapp.models import Song, Playlist
@@ -28,15 +29,20 @@ def delPlaylist(idPlaylist):
     except:
         abort(404)
     keyPlaylist.delete()
+    memcache.delete(keyPlaylist.urlsafe())
     return make_response(jsonify({"deleted":keyPlaylist.id}), 200) 
 
 
 def getPlaylist(idPlaylist):
     try:
         keyPlaylist = ndb.Key('Playlist',idPlaylist)
+        auxPlaylist = memcache.get(key.urlsafe())
+        if auxPlaylist is None:
+            auxPlaylist = keyPlaylist.get()
+            memcache.add(keyPlaylist.urlsafe(), auxPlaylist, 120)
     except:
         abort(404)
-    return make_response(jsonify((keyPlaylist.get()).toJSON), 200) 
+    return make_response(jsonify(auxPlaylist.toJSON), 200) 
 
 
 def addPlaylist(idPlaylist):
@@ -60,6 +66,7 @@ def addPlaylist(idPlaylist):
         try:
             keyPlaylist_i = newPlaylist.put()
             response = make_response(jsonify({"created":keyPlaylist_i.id()}), 201)
+            memcache.add(keyPlaylist_i.urlsafe(), newPlaylist, 300)
         except:
             abort(409)
     return response
@@ -97,6 +104,8 @@ def addSongToAPlaylist(idPlaylist):
 
     auxPlaylist.songs.append(keySong.urlsafe())
     keyPlaylist_i = auxPlaylist.put()        
+    memcache.flush_all()
+    
     return make_response(("Added "+ idSong + " in " + keyPlaylist_i.id() + " playlist"), 200)
 
 
@@ -108,8 +117,10 @@ def delSongOfAPlaylist(idPlaylist, idSong):
         auxPlaylist = keyPlaylist.get()
         auxPlaylist.songs.remove(idSong)
         keyPlaylist_i = auxPlaylist.put()
+        memcache.flush_all() 
     except:
         abort(404)
+        
     return make_response(("Deleted "+ idSong + " from " + keyPlaylist_i.id() + " playlist"), 200)
     
 

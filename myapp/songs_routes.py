@@ -4,7 +4,7 @@
 
 from datetime import date, datetime
 from google.appengine.ext import ndb
-from google.appengine.api import urlfetch
+from google.appengine.api import memcache
 from flask import Blueprint, jsonify, abort, make_response, request, url_for
 from myapp.models import Song, Webhook, Album
 import json, base64
@@ -21,15 +21,19 @@ def delSong(urlsafeSong):
     except:
         abort(404)
     keySong.delete()
+    memcache.delete(urlsafeSong)
     return make_response(jsonify({"deleted":urlsafeSong}), 200)
 
 
 def getSong(urlsafeSong):
     try:
-        keySong = ndb.Key(urlsafe=urlsafeSong)
+        auxSong=memcache.get(urlsafeSong)
+        if aux is None:
+            keySong = ndb.Key(urlsafe=urlsafeSong)
+            auxSong = keySong.get()
+            memcache.add(urlsafe, keySong.id(), 120)
     except:
         abort(404)
-    auxSong = keySong.get()
     return make_response(jsonify(auxSong.toJSON), 200)
 
 
@@ -67,6 +71,7 @@ def addSong():
     except:
         abort(404)
     keySong = newSong.put()
+    memcache.add(keySong.urlsafe(), title, 300)
     
     return make_response (jsonify({"created":keySong.urlsafe()}), 201)
 
